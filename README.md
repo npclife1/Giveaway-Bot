@@ -1,1 +1,1 @@
-# i lied bro you dont need to read me 😭🙏
+# script is in main.py
