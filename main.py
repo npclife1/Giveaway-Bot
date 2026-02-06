@@ -397,7 +397,7 @@ async def creategiveaway(interaction: discord.Interaction, title: str, descripti
     
     embed = discord.Embed(
         title=f"GIVEAWAY: 🎉 {title} 🎉",
-        description=f"Desc: {description}\n\n**Ends:** <t:{int(end_timestamp)}:R>",
+        description=f"{description}\n\n**Ends:** <t:{int(end_timestamp)}:R>",
         color=0x3498db
     )
     embed.set_image(url="https://i.imgur.com/qm7sTPg.png")
@@ -482,6 +482,7 @@ async def shutdown(interaction: discord.Interaction):
 if __name__ == "__main__":
     keep_alive()
     bot.run(os.environ.get("TOKEN"))
+
 
 
 
