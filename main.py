@@ -478,10 +478,12 @@ async def shutdown(interaction: discord.Interaction):
     await bot.close()
     sys.exit()
 
+proxy_url = os.environ.get("PROXY_URL")
 
 if __name__ == "__main__":
     keep_alive()
-    bot.run(os.environ.get("TOKEN"))
+    bot.run(os.environ.get("TOKEN"), proxy=proxy_url)
+
 
 
 
