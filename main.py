@@ -27,6 +27,8 @@ def keep_alive():
     t = Thread(target=run_web_server)
     t.start()
 
+proxy_url = os.environ.get("PROXY_URL")
+
 MONGO_URI = os.environ.get("MONGO_URI")
 cluster = MongoClient(MONGO_URI)
 db = cluster["GiveawayBot"]
@@ -55,7 +57,7 @@ async def log_event(text: str):
 
 class MyBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="!", intents=intents)
+        super().__init__(command_prefix="!", intents=intents, proxy=proxy_url)
         self.first_run = True
     
     async def setup_hook(self):
@@ -478,11 +480,10 @@ async def shutdown(interaction: discord.Interaction):
     await bot.close()
     sys.exit()
 
-proxy_url = os.environ.get("PROXY_URL")
-
 if __name__ == "__main__":
     keep_alive()
-    bot.run(os.environ.get("TOKEN"), proxy=proxy_url)
+    bot.run(os.environ.get("TOKEN"))
+
 
 
 
