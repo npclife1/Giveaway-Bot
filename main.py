@@ -413,7 +413,7 @@ async def creategiveaway(interaction: discord.Interaction, title: str, descripti
     if is_final_bool:
         embed_title = f"FINAL GIVEAWAY: 🎉 {title} 🎉"
         embed_color = 0xf1c40f
-        image_url = "https://i.imgur.com/XKHLKL5.png"
+        image_url = "https://i.imgur.com/qnLmBhj.png"
     else:
         embed_title = f"GIVEAWAY: 🎉 {title} 🎉"
         embed_color = 0x3498db
@@ -507,6 +507,7 @@ async def shutdown(interaction: discord.Interaction):
 if __name__ == "__main__":
     keep_alive()
     bot.run(os.environ.get("TOKEN"))
+
 
 
 
