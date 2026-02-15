@@ -26,7 +26,7 @@ def run_web_server():
 def keep_alive():
     t = Thread(target=run_web_server)
     t.start()
-
+    
 proxy_url = os.environ.get("PROXY_URL")
 
 MONGO_URI = os.environ.get("MONGO_URI")
@@ -137,12 +137,24 @@ class MyBot(commands.Bot):
                         await log_event("Database updated.")
 
                         await log_event("Creating embed...")
+                        
+                        is_final_status = g.get("is_final", False)
+                        
+                        if is_final_status:
+                            end_title = "FINAL GIVEAWAY ENDED 🎊"
+                            end_color = 0x00008B
+                            end_image = "https://i.imgur.com/8tFAxzY.png"
+                        else:
+                            end_title = "GIVEAWAY ENDED 🎊"
+                            end_color = 0x3498db
+                            end_image = "https://i.imgur.com/BRNcUVE.png"
+                        
                         embed = discord.Embed(
-                            title="GIVEAWAY ENDED 🎊",
+                            title=end_title,
                             description=f"**Winner**: <@{winner_id}>\n**Giveaway Won**: **{g['title']}**\n//////////////////////////////////////////////////",
-                            color=0x3498db
+                            color=end_color
                         )
-                        embed.set_image(url="https://i.imgur.com/BRNcUVE.png")
+                        embed.set_image(url=end_image)
                         embed.set_footer(text=f"Giveaway ID: {g['_id']}")
                         
                         await channel.send(embed=embed, view=GiveawayEndedView(self, g["entrants"], g["title"], g["_id"], hash_val=short_hash))
@@ -391,18 +403,28 @@ class GiveawayView(discord.ui.View):
 
 @bot.tree.command(name="creategiveaway", description="Setup a giveaway.")
 @app_commands.default_permissions(administrator=True, manage_webhooks=True)
-async def creategiveaway(interaction: discord.Interaction, title: str, description: str, hours: float):
+async def creategiveaway(interaction: discord.Interaction, title: str, description: str, hours: float, is_final: str = "n"):
     giveaway_id = str(interaction.id)
+    is_final_bool = is_final.lower() == "y"
 
     start_time = datetime.now(timezone.utc).timestamp()
     end_timestamp = start_time + (hours * 3600)
     
+    if is_final_bool:
+        embed_title = f"FINAL GIVEAWAY: 🎉 {title} 🎉"
+        embed_color = 0xf1c40f
+        image_url = "https://i.imgur.com/XKHLKL5.png"
+    else:
+        embed_title = f"GIVEAWAY: 🎉 {title} 🎉"
+        embed_color = 0x3498db
+        image_url = "https://i.imgur.com/qm7sTPg.png"
+    
     embed = discord.Embed(
-        title=f"GIVEAWAY: 🎉 {title} 🎉",
+        title=embed_title,
         description=f"{description}\n\n**Ends:** <t:{int(end_timestamp)}:R>",
-        color=0x3498db
+        color=embed_color
     )
-    embed.set_image(url="https://i.imgur.com/qm7sTPg.png")
+    embed.set_image(url=image_url)
     embed.set_footer(text=f"Giveaway ID: {giveaway_id}")
 
     await interaction.response.send_message(embed=embed, view=GiveawayView(giveaway_id))
@@ -414,10 +436,11 @@ async def creategiveaway(interaction: discord.Interaction, title: str, descripti
         "title": title,
         "channel_id": interaction.channel_id,
         "entrants": [],
-        "end_time": datetime.fromtimestamp(end_timestamp, tz=timezone.utc)
+        "end_time": datetime.fromtimestamp(end_timestamp, tz=timezone.utc),
+        "is_final": is_final_bool
     })
     
-    await log_event(f"Giveaway successfully created with title [{title}] and ID [{giveaway_id}]")
+    await log_event(f"Giveaway successfully created with title [{title}] and ID [{giveaway_id}]. Mode: {is_final_bool}")
 
 ############################################
 
@@ -480,14 +503,10 @@ async def shutdown(interaction: discord.Interaction):
     await bot.close()
     sys.exit()
 
+
 if __name__ == "__main__":
     keep_alive()
     bot.run(os.environ.get("TOKEN"))
-
-
-
-
-
 
 
 
