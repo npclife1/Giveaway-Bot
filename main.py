@@ -50,7 +50,7 @@ async def log_event(text: str):
 
 class MyBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="!", intents=intents)
+        super().__init__(command_prefix="!", intents=intents, proxy=proxy_url)
         self.first_run = True
         self.session = None
     
